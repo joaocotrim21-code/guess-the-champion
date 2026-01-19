@@ -1,0 +1,25 @@
+.year-selector {
+  margin: 1rem 0;
+  text-align: center;
+}
+
+.year-selector select {
+  padding: 0.5rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.year-selector button {
+  margin: 0 0.3rem;
+  padding: 0.4rem 0.6rem;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  background: #f5f5f5;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.year-selector button:hover {
+  background: #e0e0e0;
+}

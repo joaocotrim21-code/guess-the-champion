@@ -1,0 +1,30 @@
+.guess-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+  text-align: center;
+}
+
+.guess-card input {
+  padding: 0.5rem;
+  margin-top: 1rem;
+  width: 80%;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.guess-card button {
+  margin-top: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: #007bff;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.result {
+  margin-top: 1rem;
+  font-weight: bold;
+}

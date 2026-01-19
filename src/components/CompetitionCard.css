@@ -1,0 +1,90 @@
+.competition-card {
+  background: white;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+  text-align: center;
+  transition: transform 0.2s ease;
+}
+
+.competition-card:hover {
+  transform: translateY(-3px);
+}
+
+.competition-card.ongoing {
+  border: 2px solid gold;
+}
+
+.competition-icon {
+  width: 60px;
+  height: 60px;
+  object-fit: contain;
+  margin-bottom: 0.5rem;
+}
+
+.competition-flag {
+  width: 40px;
+  height: 25px;
+  margin-top: 0.5rem;
+}
+
+.competition-info {
+  margin-top: 1rem;
+}
+
+.competition-info p {
+  margin: 0.3rem 0;
+}
+
+.champions-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin-top: 1rem;
+  justify-content: center;
+}
+
+.champion-option {
+  background: #f5f5f5;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  padding: 0.5rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  transition: background 0.2s ease;
+}
+
+.champion-option img {
+  width: 24px;
+  height: 24px;
+  object-fit: contain;
+}
+
+.champion-option:hover {
+  background: #e0e0e0;
+}
+
+.champion-option.selected {
+  background: #007bff;
+  color: white;
+  border-color: #0056b3;
+}
+
+.ongoing-label {
+  color: goldenrod;
+  font-weight: bold;
+}
+
+.correct-border {
+  border: 3px solid green;
+}
+
+.wrong-border {
+  border: 3px solid red;
+}
+
+.pending-border {
+  border: 3px solid orange;
+}
