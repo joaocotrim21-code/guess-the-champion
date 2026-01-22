@@ -59,7 +59,7 @@ function App() {
 
     fetchCompetitions();
     fetchLeaders();
-  }, []); // corre só no mount → elimina warning do ESLint
+  }, [currentYear]); // corre só no mount → elimina warning do ESLint
 
   if (!competitionsData) return <p>Carregando dados...</p>;
 
