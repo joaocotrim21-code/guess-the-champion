@@ -11,10 +11,24 @@
   transform: translateY(-3px);
 }
 
+/* Bordas dinâmicas */
+.correct-border {
+  border: 3px solid green;
+}
+
+.wrong-border {
+  border: 3px solid red;
+}
+
+.pending-border {
+  border: 3px solid orange;
+}
+
 .competition-card.ongoing {
   border: 2px solid gold;
 }
 
+/* Ícones e flags */
 .competition-icon {
   width: 60px;
   height: 60px;
@@ -28,6 +42,7 @@
   margin-top: 0.5rem;
 }
 
+/* Info geral */
 .competition-info {
   margin-top: 1rem;
 }
@@ -36,6 +51,7 @@
   margin: 0.3rem 0;
 }
 
+/* Lista de clubes */
 .champions-list {
   display: flex;
   flex-wrap: wrap;
@@ -72,19 +88,22 @@
   border-color: #0056b3;
 }
 
+/* Labels */
 .ongoing-label {
   color: goldenrod;
   font-weight: bold;
 }
 
-.correct-border {
-  border: 3px solid green;
+.leader-info {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 0.5rem;
 }
 
-.wrong-border {
-  border: 3px solid red;
-}
-
-.pending-border {
-  border: 3px solid orange;
+.leader-info p {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #333;
 }

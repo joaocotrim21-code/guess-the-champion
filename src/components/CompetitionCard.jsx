@@ -1,7 +1,15 @@
 import React from "react";
 import "./CompetitionCard.css";
 
-function CompetitionCard({ code, year, onSelectClub, finalResult, userChoice, competitionsData, leadersData }) {
+function CompetitionCard({
+  code,
+  year,
+  onSelectClub,
+  finalResult,
+  userChoice,
+  competitionsData,
+  leadersData
+}) {
   const competition = competitionsData.competitions[code];
   if (!competition) return null;
 
@@ -19,6 +27,11 @@ function CompetitionCard({ code, year, onSelectClub, finalResult, userChoice, co
     else borderClass = "pending-border"; // laranja se não submeteu
   }
 
+  const leaderInfo = leadersData?.[code];
+  const leaderName = leaderInfo?.team;
+  const leaderCrest = leaderInfo?.crest;
+  const leaderPoints = leaderInfo?.points;
+
   return (
     <div className={`competition-card ${borderClass}`}>
       <h3>{competition.name || code}</h3>
@@ -27,14 +40,24 @@ function CompetitionCard({ code, year, onSelectClub, finalResult, userChoice, co
       {!champion && (
         <div className="ongoing">
           <p className="ongoing-label">🕐 Época em curso</p>
-          {leadersData?.[code] && (
+          {leaderInfo && (
             <div className="leader-info">
-              <img
-                src={leadersData[code].crest}
-                alt={leadersData[code].team}
-                className="competition-icon"
-              />
-              <p>Líder atual: {leadersData[code].team}</p>
+              {leaderCrest && (
+                <img
+                  src={leaderCrest}
+                  alt={leaderName}
+                  className="competition-icon"
+                />
+              )}
+              <p>
+                Líder atual:{" "}
+                <strong>
+                  {leaderName}
+                  {leaderPoints !== undefined && leaderPoints !== null
+                    ? ` — ${leaderPoints} pts`
+                    : ""}
+                </strong>
+              </p>
             </div>
           )}
         </div>
@@ -53,7 +76,9 @@ function CompetitionCard({ code, year, onSelectClub, finalResult, userChoice, co
           {Object.keys(competition.totals).map(clubName => (
             <button
               key={clubName}
-              className={`champion-option ${userChoice === clubName ? "selected" : ""}`}
+              className={`champion-option ${
+                userChoice === clubName ? "selected" : ""
+              }`}
               onClick={() => onSelectClub(clubName)}
             >
               {clubName}
@@ -65,7 +90,9 @@ function CompetitionCard({ code, year, onSelectClub, finalResult, userChoice, co
       {/* Depois de submetido → mostra vencedor real */}
       {result && champion && (
         <div className="final-result">
-          <p>Campeão {season.season}: <strong>{champion}</strong></p>
+          <p>
+            Campeão {season.season}: <strong>{champion}</strong>
+          </p>
           {season.winner?.crest && (
             <img
               src={season.winner.crest}
