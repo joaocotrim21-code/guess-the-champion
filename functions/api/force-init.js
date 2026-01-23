@@ -1,11 +1,11 @@
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
-  const keys = await COMPETITIONS.list();
+  const codes = ["CL","PL","PPL","PD","SA","BL1","FL1","DED","BSA","WC","EC"];
   const result = {};
 
-  for (const { name } of keys.keys) {
-    const raw = await COMPETITIONS.get(name);
-    if (raw) result[name] = JSON.parse(raw);
+  for (const code of codes) {
+    await COMPETITIONS.put(code, JSON.stringify([]));
+    result[code] = "Reinicializado";
   }
 
   return new Response(JSON.stringify(result), {
