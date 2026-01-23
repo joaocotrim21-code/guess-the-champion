@@ -5,6 +5,3 @@ pages_build_output_dir = "build"
 kv_namespaces = [
   { binding = "COMPETITIONS", id = "f8daf0d60ee44368a5e645ee8e2b854f" }
 ]
-
-[vars]
-FOOTBALL_DATA_TOKEN = "e3cf43d89e674df983d4d2c4664a6a3c"
