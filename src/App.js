@@ -59,13 +59,14 @@ function App() {
 
     fetchCompetitions();
     fetchLeaders();
-  }, [currentYear]); // corre só no mount → elimina warning do ESLint
+  }, [currentYear]);
 
   if (!competitionsData) return <p>Carregando dados...</p>;
 
   const competitionCodes = Object.entries(competitionsData.competitions)
     .filter(([code, comp]) =>
       allowedCompetitions.includes(code) &&
+      Array.isArray(comp.history) &&
       comp.history.some(h => h.year === selectedYear)
     )
     .map(([code]) => code);

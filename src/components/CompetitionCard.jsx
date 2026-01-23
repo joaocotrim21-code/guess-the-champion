@@ -19,12 +19,11 @@ function CompetitionCard({
   const result = finalResult ? finalResult.find(r => r.code === code) : null;
   const champion = season.winner?.name || season.winner;
 
-  // Estado visual da borda
   let borderClass = "";
   if (result) {
     if (result.correct) borderClass = "correct-border";
     else if (result.userChoice) borderClass = "wrong-border";
-    else borderClass = "pending-border"; // laranja se não submeteu
+    else borderClass = "pending-border";
   }
 
   const leaderInfo = leadersData?.[code];
@@ -36,7 +35,6 @@ function CompetitionCard({
     <div className={`competition-card ${borderClass}`}>
       <h3>{competition.name || code}</h3>
 
-      {/* Caso época em curso (sem campeão definido) */}
       {!champion && (
         <div className="ongoing">
           <p className="ongoing-label">🕐 Época em curso</p>
@@ -63,17 +61,15 @@ function CompetitionCard({
         </div>
       )}
 
-      {/* Antes da submissão → mostra escolha do utilizador */}
       {!result && userChoice && (
         <div className="competition-info">
           <p>Escolhido: {userChoice}</p>
         </div>
       )}
 
-      {/* Lista de clubes para escolher (antes de submeter) */}
       {!result && (
         <div className="champions-list">
-          {Object.keys(competition.totals).map(clubName => (
+          {Object.keys(competition.totals || {}).map(clubName => (
             <button
               key={clubName}
               className={`champion-option ${
@@ -84,26 +80,4 @@ function CompetitionCard({
               {clubName}
             </button>
           ))}
-        </div>
-      )}
-
-      {/* Depois de submetido → mostra vencedor real */}
-      {result && champion && (
-        <div className="final-result">
-          <p>
-            Campeão {season.season}: <strong>{champion}</strong>
-          </p>
-          {season.winner?.crest && (
-            <img
-              src={season.winner.crest}
-              alt={champion}
-              className="competition-icon"
-            />
-          )}
-        </div>
-      )}
-    </div>
-  );
-}
-
-export default CompetitionCard;
+        </div
