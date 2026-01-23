@@ -1,12 +1,20 @@
 export async function onRequest(context) {
-  const { COMPETITIONS } = context.env;
-  const FOOTBALL_DATA_TOKEN = await context.env.FOOTBALL_DATA_TOKEN;
+  const { COMPETITIONS, FOOTBALL_DATA_TOKEN } = context.env;
+  const cacheKey = "competitions-data";
+  const cached = await COMPETITIONS.get(cacheKey, { type: "json" });
 
-  const codes = ["CL","PL","PPL","PD","SA","BL1","FL1","DED","BSA","WC","EC"];
+  // Se já houver dados guardados, devolve diretamente
+  if (cached) {
+    return new Response(JSON.stringify(cached), {
+      headers: { "Content-Type": "application/json" }
+    });
+  }
+
+  const codes = ["CL", "PL", "PPL", "PD", "SA", "BL1", "FL1", "DED", "BSA", "WC", "EC"];
   const result = {};
 
   for (const code of codes) {
-	 await new Promise(r => setTimeout(r, 500)); // 500ms delay
+    await new Promise(r => setTimeout(r, 500)); // Delay para evitar 429
     try {
       const res = await fetch(`https://api.football-data.org/v4/competitions/${code}`, {
         headers: { "X-Auth-Token": FOOTBALL_DATA_TOKEN }
@@ -18,29 +26,16 @@ export async function onRequest(context) {
       }
 
       const data = await res.json();
-      const history = await COMPETITIONS.get(code);
-      const parsed = history ? JSON.parse(history) : [];
-
-      parsed.unshift({
-        season: data.currentSeason?.startDate?.slice(0,4) + "/" + data.currentSeason?.endDate?.slice(0,4),
-        year: parseInt(data.currentSeason?.endDate?.slice(0,4)),
-        winner: data.winner?.name || null,
-        titles: data.winner?.titles || null,
-        streak: data.winner?.streak || null
-      });
-
-      await COMPETITIONS.put(code, JSON.stringify(parsed));
-      result[code] = { history: parsed };
-
+      result[code] = data;
     } catch (err) {
-      result[code] = { error: "Erro 400" };
+      result[code] = { error: "Erro ao buscar dados" };
     }
   }
 
+  // Guarda os dados em cache por 1 hora
+  await COMPETITIONS.put(cacheKey, JSON.stringify(result), { expirationTtl: 3600 });
+
   return new Response(JSON.stringify(result), {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    }
+    headers: { "Content-Type": "application/json" }
   });
 }
