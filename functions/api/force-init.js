@@ -1,12 +1,14 @@
-import competitions from "../data/competitions.json";
+import competitionsData from "../data/competitions.json";
 
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
-  const FOOTBALL_DATA_TOKEN = await context.env.FOOTBALL_DATA_TOKEN;
   const result = {};
 
+  const competitions = competitionsData.competitions;
+
   for (const code of Object.keys(competitions)) {
-    await COMPETITIONS.put(code, JSON.stringify(competitions[code]));
+    const history = competitions[code].history || [];
+    await COMPETITIONS.put(code, JSON.stringify(history));
     result[code] = "Importado";
   }
 
