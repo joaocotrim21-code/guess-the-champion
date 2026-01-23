@@ -1,11 +1,13 @@
+import competitions from "../data/competitions.json";
+
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
-  const codes = ["CL","PL","PPL","PD","SA","BL1","FL1","DED","BSA","WC","EC"];
+  const FOOTBALL_DATA_TOKEN = await context.env.FOOTBALL_DATA_TOKEN;
   const result = {};
 
-  for (const code of codes) {
-    await COMPETITIONS.put(code, JSON.stringify([]));
-    result[code] = "Reinicializado";
+  for (const code of Object.keys(competitions)) {
+    await COMPETITIONS.put(code, JSON.stringify(competitions[code]));
+    result[code] = "Importado";
   }
 
   return new Response(JSON.stringify(result), {
