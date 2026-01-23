@@ -1,5 +1,6 @@
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
+  const FOOTBALL_DATA_TOKEN = await context.env.FOOTBALL_DATA_TOKEN;
   const keys = await COMPETITIONS.list();
   const result = {};
 

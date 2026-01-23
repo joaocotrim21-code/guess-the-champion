@@ -28,7 +28,7 @@ function App() {
   useEffect(() => {
     async function fetchCompetitions() {
       try {
-        const res = await fetch("https://guess-the-champion.joaocotrim21.workers.dev/update-competitions");
+        const res = await fetch("/api/update-competitions");
         const data = await res.json();
         setCompetitionsData({ competitions: data });
       } catch (err) {
@@ -38,7 +38,7 @@ function App() {
 
     async function fetchLeaders() {
       try {
-        const res = await fetch("https://guess-the-champion.joaocotrim21.workers.dev/current-leaders");
+        const res = await fetch("/api/current-leaders");
         const data = await res.json();
         setLeadersData(data);
       } catch (err) {

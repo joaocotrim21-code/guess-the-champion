@@ -10,6 +10,18 @@ export default {
       "Access-Control-Allow-Origin": "*"
     };
 
+    // Forçar re-inicialização do KV
+    if (url.pathname === "/force-init") {
+      const reinit = {};
+      for (const [code, comp] of Object.entries(competitionsData.competitions)) {
+        const payload = { history: comp.history, totals: comp.totals };
+        await env.COMPETITIONS.put(code, JSON.stringify(payload));
+        reinit[code] = "Reinicializado";
+      }
+      await env.COMPETITIONS.put("INIT_DONE", "true");
+      return new Response(JSON.stringify(reinit, null, 2), { headers: jsonHeaders });
+    }
+
     // Auto-inicialização do KV
     const initFlag = await env.COMPETITIONS.get("INIT_DONE");
     if (!initFlag) {
@@ -141,21 +153,8 @@ export default {
 
       return new Response(JSON.stringify(leaders, null, 2), { headers: jsonHeaders });
     }
-	
-	    // Forçar re-inicialização do KV
-    if (url.pathname === "/force-init") {
-      const reinit = {};
-      for (const [code, comp] of Object.entries(competitionsData.competitions)) {
-        const payload = { history: comp.history, totals: comp.totals };
-        await env.COMPETITIONS.put(code, JSON.stringify(payload));
-        reinit[code] = "Reinicializado";
-      }
-      await env.COMPETITIONS.put("INIT_DONE", "true");
-      return new Response(JSON.stringify(reinit, null, 2), { headers: jsonHeaders });
-    }
 
-
-    return new Response("Worker ativo. Endpoints: /update-competitions, /current-leaders, /export-competitions", {
+    return new Response("Worker ativo. Endpoints: /update-competitions, /current-leaders, /export-competitions, /force-init", {
       headers: { "Access-Control-Allow-Origin": "*" }
     });
   }

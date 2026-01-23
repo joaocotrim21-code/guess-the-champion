@@ -6,6 +6,7 @@ export async function onRequest(context) {
   const result = {};
 
   for (const code of codes) {
+	 await new Promise(r => setTimeout(r, 500)); // 500ms delay
     try {
       const res = await fetch(`https://api.football-data.org/v4/competitions/${code}`, {
         headers: { "X-Auth-Token": FOOTBALL_DATA_TOKEN }

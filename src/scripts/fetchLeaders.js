@@ -57,14 +57,14 @@ function shouldUpdateHour() {
 // Funções de API (via Worker)
 // ----------------------
 async function fetchLeader(code) {
-  const res = await fetch(`https://guess-the-champion.joaocotrim21.workers.dev/current-leaders`);
+  const res = await fetch("/api/current-leaders");
   if (!res.ok) throw new Error(`Erro em leaders: ${res.status} ${res.statusText}`);
   const data = await res.json();
   return data[code] || null;
 }
 
 async function fetchCompetitionData() {
-  const res = await fetch("https://guess-the-champion.joaocotrim21.workers.dev/update-competitions");
+  const res = await fetch("/api/update-competitions");
   if (!res.ok) throw new Error(`Erro em competitions: ${res.status} ${res.statusText}`);
   return res.json();
 }
