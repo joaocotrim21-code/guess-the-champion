@@ -63,12 +63,13 @@ function App() {
 
   if (!competitionsData) return <p>Carregando dados...</p>;
 
+  // ✅ Correção robusta para evitar erro em comp.history
   const competitionCodes = Object.entries(competitionsData.competitions)
-    .filter(([code, comp]) =>
-      allowedCompetitions.includes(code) &&
-      Array.isArray(comp.history) &&
-      comp.history.some(h => h.year === selectedYear)
-    )
+    .filter(([code, comp]) => {
+      if (!allowedCompetitions.includes(code)) return false;
+      if (!comp || !Array.isArray(comp.history)) return false;
+      return comp.history.some(h => h.year === selectedYear);
+    })
     .map(([code]) => code);
 
   const handleChoice = (competitionCode, clubName) => {
