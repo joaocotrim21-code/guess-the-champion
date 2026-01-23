@@ -1,20 +1,18 @@
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
-  const FOOTBALL_DATA_TOKEN = await context.env.FOOTBALL_DATA_TOKEN;
-  const keys = await COMPETITIONS.list();
+  const codes = ["CL", "PL", "PPL", "PD", "SA", "BL1", "FL1", "DED", "BSA", "WC", "EC"];
   const result = {};
 
-  for (const { name } of keys.keys) {
-    if (name.startsWith("leader_")) {
-      const raw = await COMPETITIONS.get(name);
-      if (raw) result[name.slice(7)] = JSON.parse(raw);
+  for (const code of codes) {
+    const leader = await COMPETITIONS.get(`${code}_LEADER`, { type: "json" });
+    if (leader) {
+      result[code] = leader;
+    } else {
+      result[code] = { error: "Sem dados de líder no KV" };
     }
   }
 
   return new Response(JSON.stringify(result), {
-    headers: {
-      "Content-Type": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    }
+    headers: { "Content-Type": "application/json" }
   });
 }
