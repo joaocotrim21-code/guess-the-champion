@@ -7,4 +7,4 @@ kv_namespaces = [
 ]
 
 [vars]
-FOOTBALL_DATA_TOKEN = env.FOOTBALL_DATA_TOKEN
+FOOTBALL_DATA_TOKEN="e3cf43d89e674df983d4d2c4664a6a3c"
