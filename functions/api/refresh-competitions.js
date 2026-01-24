@@ -1,4 +1,4 @@
-import competitionsData from "../../data/competitions.json";
+import competitionsData from "../data/competitions.json";
 
 export async function onRequest(context) {
   const { COMPETITIONS } = context.env;
