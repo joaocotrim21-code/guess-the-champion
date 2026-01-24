@@ -8,7 +8,7 @@ export async function onRequest(context) {
   for (const code of codes) {
     const fullObject = competitionsData[code];
     if (fullObject && typeof fullObject === "object") {
-      await COMPETITIONS.put(code, JSON.stringify(fullObject));
+      await COMPETITIONS.put(code, JSON.stringify(fullObject)); // ← ESTA LINHA É CRUCIAL
       result[code] = { status: "ok" };
     } else {
       result[code] = { error: "Formato inválido no ficheiro" };
