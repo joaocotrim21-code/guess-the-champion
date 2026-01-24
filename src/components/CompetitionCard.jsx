@@ -17,7 +17,11 @@ function CompetitionCard({
   if (!season) return <p className="no-data">Sem dados para {year}</p>;
 
   const result = finalResult ? finalResult.find(r => r.code === code) : null;
-  const champion = season.winner?.name || season.winner;
+
+  // Corrigido: aceita winner como string ou objeto
+  const champion = typeof season.winner === "string"
+    ? season.winner
+    : season.winner?.name || null;
 
   let borderClass = "";
   if (result) {
