@@ -1,0 +1,55 @@
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #f5f6f8;
+  color: #222;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 16px;
+  background: white;
+  position: sticky;
+  top: 0;
+}
+
+main {
+  padding: 20px;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+}
+
+.card {
+  background: white;
+  border-radius: 12px;
+  padding: 12px;
+  border: 2px solid transparent;
+}
+
+.card h3 {
+  margin-top: 0;
+}
+
+.card button {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px;
+  cursor: pointer;
+}
+
+.card.correct {
+  border-color: #2ecc71;
+}
+
+.card.wrong {
+  border-color: #e74c3c;
+}
+
+footer {
+  padding: 16px;
+  text-align: center;
+}

@@ -1,7 +1,0 @@
-name = "guess-the-champion"
-compatibility_date = "2024-01-01"
-pages_build_output_dir = "build"
-
-kv_namespaces = [
-  { binding = "COMPETITIONS", id = "f8daf0d60ee44368a5e645ee8e2b854f" }
-]
