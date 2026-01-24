@@ -6,13 +6,12 @@ export async function onRequest(context) {
   const result = {};
 
   for (const code of codes) {
-    const data = competitionsData[code];
-    if (data) {
-      // Guarda o objeto completo no KV
-      await COMPETITIONS.put(code, JSON.stringify(data));
+    const fullObject = competitionsData[code];
+    if (fullObject && typeof fullObject === "object") {
+      await COMPETITIONS.put(code, JSON.stringify(fullObject));
       result[code] = { status: "ok" };
     } else {
-      result[code] = { error: "Não encontrado no ficheiro competitions.json" };
+      result[code] = { error: "Formato inválido no ficheiro" };
     }
   }
 
