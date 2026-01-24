@@ -8,9 +8,9 @@ export async function onRequest(context) {
     const fullObject = competitionsData[code];
     if (fullObject && typeof fullObject === "object") {
       await COMPETITIONS.put(code, JSON.stringify(fullObject));
-      result[code] = { status: "ok" };
+      result[code] = { status: "CERTO" };
     } else {
-      result[code] = { error: "Formato inválido no ficheiro" };
+      result[code] = { error: "Formato inválido" };
     }
   }
 
