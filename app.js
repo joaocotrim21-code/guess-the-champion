@@ -11,10 +11,17 @@ fetch("data/competitions.json")
   .then(res => res.json())
   .then(json => {
     data = json;
-    currentYear = getLatestYear();
+    // calcular todos os anos
+    allYears = [...new Set(Object.values(data.competitions).flatMap(c => c.history.map(h => h.year)))]
+      .sort((a, b) => b - a);
+
+    currentYear = allYears[0] || new Date().getFullYear();
+
     updateYear();
+    populateYearSelect();
     renderCards();
   });
+
 
 function getLatestYear() {
   const years = [];
@@ -41,43 +48,41 @@ function renderCards() {
     const card = document.createElement("div");
     card.className = "card";
 
-    // título do cartão
     card.innerHTML = `
-  <div class="card-header">
-    <img src="${comp.icon}" alt="${comp.name}" />
-    <div>
-      <h3>${comp.name}</h3>
-      <img class="flag" src="${comp.flag}" />
-    </div>
-  </div>
-`;
+      <div class="card-header">
+        <img class="icon" src="${comp.icon || ''}" alt="${comp.name}" />
+        <div class="title-block">
+          <h3>${comp.name}</h3>
+          <img class="flag" src="${comp.flag || ''}" />
+        </div>
+    `;
 
+    // Ordena os clubes por total de títulos (se existir)
+    const totals = comp.totals || {};
+    const sortedClubs = Object.entries(totals).sort((a, b) => b[1] - a[1]);
 
-    // ordenar clubes por total de títulos (desc)
-    const clubs = Object.entries(comp.totals)
-      .sort((a, b) => b[1] - a[1]);
+    if (sortedClubs.length === 0) {
+      // Se não há clubes, mostra aviso
+      const p = document.createElement("p");
+      p.textContent = "Sem dados de clubes";
+      card.appendChild(p);
+    }
 
-    clubs.forEach(([club, titles]) => {
+    sortedClubs.forEach(([club, titles]) => {
       const btn = document.createElement("button");
       btn.textContent = `${club} (${titles})`;
-
       btn.onclick = () => {
-  userChoices[code] = club;
-
-  card.querySelectorAll("button").forEach(b =>
-    b.classList.remove("selected")
-  );
-
-  btn.classList.add("selected");
-};
-
-
+        userChoices[code] = club;
+        card.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      };
       card.appendChild(btn);
     });
 
     container.appendChild(card);
   });
 }
+
 
 document.getElementById("submit").onclick = () => {
 	let total = 0;
