@@ -10,16 +10,22 @@
 
 <header class="top-bar">
   <button id="prevYear">◀</button>
-  <span id="currentYear"></span>
+
+  <select id="yearSelect"></select>
+
   <button id="nextYear">▶</button>
   <button id="randomYear">🎲</button>
 </header>
+
 
 <main id="cards"></main>
 
 <footer>
   <button id="submit">Send</button>
   <div id="result"></div>
+  <button id="share" style="display:none;">Share</button>
+<textarea id="shareBox" readonly style="display:none; width:100%; height:120px;"></textarea>
+
 </footer>
 
 <script src="app.js"></script>
