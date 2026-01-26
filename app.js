@@ -13,10 +13,15 @@ fetch("data/competitions.json")
     data = json;
 
     // calcular todos os anos possíveis
-    allYears = [...new Set(
-      Object.values(data.competitions)
-        .flatMap(c => c.history.map(h => h.year).filter(Boolean))
-    )].sort((a, b) => b - a);
+   allYears = [...new Set(
+  Object.values(data.competitions)
+    .flatMap(c =>
+      c.history
+        .filter(h => h.winner) // só épocas concluídas
+        .map(h => h.year)
+    )
+)].sort((a, b) => b - a);
+
 
     // definir ano inicial
     currentYear = allYears.includes(yearFromUrl)
@@ -60,6 +65,8 @@ function renderCards() {
   userChoices = {};
 
   Object.entries(data.competitions).forEach(([code, comp]) => {
+  const season = comp.history.find(h => h.year === currentYear);
+  if (!season) return; //não existia nesse ano
     const card = document.createElement("div");
     card.className = "card";
 
@@ -132,6 +139,19 @@ document.getElementById("submit").onclick = () => {
     const season = comp.history.find(h => h.year === currentYear);
     const winner = season?.winner;
     const pick = userChoices[code];
+    
+    card.innerHTML = `
+  <div class="result-card ${pick === winner ? "correct" : "wrong"}">
+    <img class="club-logo" src="logos/${winner}.png" />
+    <h4>${winner}</h4>
+    ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
+    ${
+      pick && pick !== winner
+        ? `<div class="wrong-pick">❌ ${pick}</div>`
+        : ""
+    }
+  </div>
+`;
 
     if (!winner) {
       card.style.borderColor = "gold";
