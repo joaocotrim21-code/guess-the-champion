@@ -1,197 +1,38 @@
 let data;
 let currentYear;
+let allYears = [];
 let userChoices = {};
 
-
 const urlParams = new URLSearchParams(window.location.search);
-const yearFromUrl = urlParams.get("year");
+const yearFromUrl = Number(urlParams.get("year"));
 
-
+// FETCH ÚNICO ✅
 fetch("data/competitions.json")
   .then(res => res.json())
   .then(json => {
     data = json;
-    // calcular todos os anos
-    allYears = [...new Set(Object.values(data.competitions).flatMap(c => c.history.map(h => h.year)))]
-      .sort((a, b) => b - a);
 
-    currentYear = allYears[0] || new Date().getFullYear();
+    // calcular todos os anos possíveis
+    allYears = [...new Set(
+      Object.values(data.competitions)
+        .flatMap(c => c.history.map(h => h.year).filter(Boolean))
+    )].sort((a, b) => b - a);
+
+    // definir ano inicial
+    currentYear = allYears.includes(yearFromUrl)
+      ? yearFromUrl
+      : allYears[0];
 
     updateYear();
     populateYearSelect();
     renderCards();
   });
 
-
-function getLatestYear() {
-  const years = [];
-
-  Object.values(data.competitions).forEach(comp => {
-    comp.history.forEach(h => {
-      if (h.year) years.push(h.year);
-    });
-  });
-
-  return Math.max(...years);
-}
-
 function updateYear() {
   document.getElementById("currentYear").textContent = currentYear;
+  const select = document.getElementById("yearSelect");
+  if (select) select.value = currentYear;
 }
-
-function renderCards() {
-  const container = document.getElementById("cards");
-  container.innerHTML = "";
-  userChoices = {};
-
-  Object.entries(data.competitions).forEach(([code, comp]) => {
-    const card = document.createElement("div");
-    card.className = "card";
-
-    card.innerHTML = `
-      <div class="card-header">
-        <img class="icon" src="${comp.icon || ''}" alt="${comp.name}" />
-        <div class="title-block">
-          <h3>${comp.name}</h3>
-          <img class="flag" src="${comp.flag || ''}" />
-        </div>
-    `;
-
-    // Ordena os clubes por total de títulos (se existir)
-    const totals = comp.totals || {};
-    const sortedClubs = Object.entries(totals).sort((a, b) => b[1] - a[1]);
-
-    if (sortedClubs.length === 0) {
-      // Se não há clubes, mostra aviso
-      const p = document.createElement("p");
-      p.textContent = "Sem dados de clubes";
-      card.appendChild(p);
-    }
-
-    sortedClubs.forEach(([club, titles]) => {
-      const btn = document.createElement("button");
-      btn.textContent = `${club} (${titles})`;
-      btn.onclick = () => {
-        userChoices[code] = club;
-        card.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
-      };
-      card.appendChild(btn);
-    });
-
-    container.appendChild(card);
-  });
-}
-
-document.getElementById("submit").onclick = () => {
-	let total = 0;
-	let correctCount = 0;
-  document.querySelectorAll(".card").forEach(card => {
-    const title = card.querySelector("h3").textContent;
-
-    const compEntry = Object.entries(data.competitions)
-      .find(([_, c]) => c.name === title);
-
-    if (!compEntry) return;
-
-    const [code, comp] = compEntry;
-
-    const season = comp.history.find(h => h.year === currentYear);
-    const correctWinner = season?.winner;
-    const userPick = userChoices[code];
-	
-	if (correctWinner) {
-		total++;
-		if (userPick === correctWinner) {
-			correctCount++;
-			}
-}
-
-    if (!correctWinner) {
-      card.style.borderColor = "gold"; // época em curso
-      return;
-    }
-	
-
-card.querySelectorAll("button").forEach(b => {
-  if (b.textContent.startsWith(correctWinner)) {
-    b.style.border = "2px solid #2ecc71";
-  }
-  if (b.textContent.startsWith(userPick) && userPick !== correctWinner) {
-    b.style.border = "2px solid #e74c3c";
-  }
-});
-
-
-
-  });
-  const percent = total ? Math.round((correctCount / total) * 100) : 0;
-
-const shareText =
-  `GuessTheChampion ${currentYear}\n` +
-  `Score: ${correctCount}/${total} (${percent}%)\n\n` +
-  `Play: ${window.location.origin}/?year=${currentYear}`;
-
-showShare(shareText);
-
-};
-
-// botão random 🎲
-document.getElementById("randomYear").onclick = () => {
-  const years = [];
-
-  Object.values(data.competitions).forEach(c =>
-    c.history.forEach(h => h.year && years.push(h.year))
-  );
-
-  currentYear = years[Math.floor(Math.random() * years.length)];
-  updateYear();
-  renderCards();
-};
-
-//guarda todos os anos possíveis
-let allYears = [];
-
-fetch("data/competitions.json")
-  .then(res => res.json())
-  .then(json => {
-    data = json;
-
-    const yearSet = new Set();
-    Object.values(data.competitions).forEach(c =>
-      c.history.forEach(h => h.year && yearSet.add(h.year))
-    );
-
-    allYears = Array.from(yearSet).sort((a, b) => b - a);
-    currentYear = allYears[0];
-
-    updateYear();
-    renderCards();
-  });
-
-//lógica das setas
-document.getElementById("prevYear").onclick = () => {
-  const idx = allYears.indexOf(currentYear);
-  if (idx < allYears.length - 1) {
-    currentYear = allYears[idx + 1];
-    updateYear();
-    renderCards();
-  }
-};
-
-document.getElementById("nextYear").onclick = () => {
-  const idx = allYears.indexOf(currentYear);
-  if (idx > 0) {
-    currentYear = allYears[idx - 1];
-    updateYear();
-    renderCards();
-  }
-};
-
-if (yearFromUrl && allYears.includes(Number(yearFromUrl))) {
-  currentYear = Number(yearFromUrl);
-}
-
 
 function populateYearSelect() {
   const select = document.getElementById("yearSelect");
@@ -213,29 +54,120 @@ function populateYearSelect() {
   };
 }
 
-populateYearSelect();
+function renderCards() {
+  const container = document.getElementById("cards");
+  container.innerHTML = "";
+  userChoices = {};
 
-function updateYear() {
-  document.getElementById("currentYear").textContent = currentYear;
+  Object.entries(data.competitions).forEach(([code, comp]) => {
+    const card = document.createElement("div");
+    card.className = "card";
 
-  const select = document.getElementById("yearSelect");
-  if (select) select.value = currentYear;
+    card.innerHTML = `
+      <div class="card-header">
+        <img class="icon" src="${comp.icon}" />
+        <h3>${comp.name}</h3>
+      </div>
+    `;
+
+    const totals = Object.entries(comp.totals || {})
+      .sort((a, b) => b[1] - a[1]);
+
+    totals.forEach(([club, titles]) => {
+      const btn = document.createElement("button");
+      btn.textContent = `${club} (${titles})`;
+
+      btn.onclick = () => {
+        userChoices[code] = club;
+        card.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
+        btn.classList.add("selected");
+      };
+
+      card.appendChild(btn);
+    });
+
+    container.appendChild(card);
+  });
 }
+
+// SETAS
+document.getElementById("prevYear").onclick = () => {
+  const i = allYears.indexOf(currentYear);
+  if (i < allYears.length - 1) {
+    currentYear = allYears[i + 1];
+    updateYear();
+    renderCards();
+  }
+};
+
+document.getElementById("nextYear").onclick = () => {
+  const i = allYears.indexOf(currentYear);
+  if (i > 0) {
+    currentYear = allYears[i - 1];
+    updateYear();
+    renderCards();
+  }
+};
+
+// RANDOM 🎲
+document.getElementById("randomYear").onclick = () => {
+  currentYear = allYears[Math.floor(Math.random() * allYears.length)];
+  updateYear();
+  renderCards();
+};
+
+// SUBMIT
+document.getElementById("submit").onclick = () => {
+  let total = 0;
+  let correct = 0;
+
+  document.querySelectorAll(".card").forEach(card => {
+    const name = card.querySelector("h3").textContent;
+    const entry = Object.entries(data.competitions)
+      .find(([_, c]) => c.name === name);
+
+    if (!entry) return;
+
+    const [code, comp] = entry;
+    const season = comp.history.find(h => h.year === currentYear);
+    const winner = season?.winner;
+    const pick = userChoices[code];
+
+    if (!winner) {
+      card.style.borderColor = "gold";
+      return;
+    }
+
+    total++;
+    if (pick === winner) correct++;
+
+    card.querySelectorAll("button").forEach(b => {
+      if (b.textContent.startsWith(winner)) b.style.border = "2px solid green";
+      if (b.textContent.startsWith(pick) && pick !== winner)
+        b.style.border = "2px solid red";
+    });
+  });
+
+  const percent = total ? Math.round((correct / total) * 100) : 0;
+
+  showShare(
+    `GuessTheChampion ${currentYear}\n` +
+    `Score: ${correct}/${total} (${percent}%)\n\n` +
+    `${location.origin}/?year=${currentYear}`
+  );
+};
 
 function showShare(text) {
-  const btn = document.getElementById("share");
   const box = document.getElementById("shareBox");
+  const btn = document.getElementById("share");
 
   box.value = text;
-  btn.style.display = "inline-block";
   box.style.display = "block";
+  btn.style.display = "inline-block";
 
   btn.onclick = async () => {
-    try {
-      await navigator.clipboard.writeText(text);
-      btn.textContent = "Copiado! ✅";
-    } catch {
-      alert("Copia manualmente o texto 👍");
-    }
+    await navigator.clipboard.writeText(text);
+    btn.textContent = "Copiado! ✅";
   };
 }
+
