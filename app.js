@@ -129,43 +129,52 @@ document.getElementById("submit").onclick = () => {
   let correct = 0;
 
   document.querySelectorAll(".card").forEach(card => {
-    const name = card.querySelector("h3").textContent;
+    const name = card.querySelector("h3")?.textContent;
+    if (!name) return;
+
     const entry = Object.entries(data.competitions)
       .find(([_, c]) => c.name === name);
-
     if (!entry) return;
 
     const [code, comp] = entry;
     const season = comp.history.find(h => h.year === currentYear);
-    const winner = season?.winner;
-    const pick = userChoices[code];
-    
-    card.innerHTML = `
-  <div class="result-card ${pick === winner ? "correct" : "wrong"}">
-    <img class="club-logo" src="logos/${winner}.png" />
-    <h4>${winner}</h4>
-    ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
-    ${
-      pick && pick !== winner
-        ? `<div class="wrong-pick">❌ ${pick}</div>`
-        : ""
-    }
-  </div>
-`;
+    if (!season) return;
 
+    const winner = season.winner;
+    const pick = userChoices[code];
+
+    // Época em curso
     if (!winner) {
-      card.style.borderColor = "gold";
+      card.classList.add("ongoing");
+      card.innerHTML = `
+        <h4>${comp.name}</h4>
+        <div>🏗️ Em curso</div>
+      `;
       return;
     }
 
     total++;
     if (pick === winner) correct++;
 
-    card.querySelectorAll("button").forEach(b => {
-      if (b.textContent.startsWith(winner)) b.style.border = "2px solid green";
-      if (b.textContent.startsWith(pick) && pick !== winner)
-        b.style.border = "2px solid red";
-    });
+    card.classList.add(pick === winner ? "correct" : "wrong");
+
+    // RESULTADO FINAL DO CARD
+    card.innerHTML = `
+      <div class="result-card">
+        <img class="club-logo" 
+             src="logos/${winner}.png"
+             onerror="this.style.display='none'" />
+        <h4>${winner}</h4>
+
+        ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
+
+        ${
+          pick && pick !== winner
+            ? `<div class="wrong-pick">❌ ${pick}</div>`
+            : ""
+        }
+      </div>
+    `;
   });
 
   const percent = total ? Math.round((correct / total) * 100) : 0;
@@ -176,6 +185,7 @@ document.getElementById("submit").onclick = () => {
     `${location.origin}/?year=${currentYear}`
   );
 };
+
 
 function showShare(text) {
   const box = document.getElementById("shareBox");
