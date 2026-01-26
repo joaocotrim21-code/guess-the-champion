@@ -65,8 +65,9 @@ function renderCards() {
   userChoices = {};
 
   Object.entries(data.competitions).forEach(([code, comp]) => {
-  const season = comp.history.find(h => h.year === currentYear);
-  if (!season) return; //não existia nesse ano
+    const season = comp.history.find(h => h.year === currentYear);
+    if (!season) return;
+
     const card = document.createElement("div");
     card.className = "card";
 
@@ -75,7 +76,16 @@ function renderCards() {
         <img class="icon" src="${comp.icon}" />
         <h3>${comp.name}</h3>
       </div>
+
+      <div class="pick-display">
+        <span class="placeholder">Escolhe o campeão</span>
+      </div>
+
+      <div class="club-list hidden"></div>
     `;
+
+    const list = card.querySelector(".club-list");
+    const display = card.querySelector(".pick-display");
 
     const totals = Object.entries(comp.totals || {})
       .sort((a, b) => b[1] - a[1]);
@@ -86,16 +96,22 @@ function renderCards() {
 
       btn.onclick = () => {
         userChoices[code] = club;
-        card.querySelectorAll("button").forEach(b => b.classList.remove("selected"));
-        btn.classList.add("selected");
+        display.innerHTML = `<strong>${club}</strong>`;
+        list.classList.add("hidden");
+        card.classList.add("picked");
       };
 
-      card.appendChild(btn);
+      list.appendChild(btn);
     });
+
+    display.onclick = () => {
+      list.classList.toggle("hidden");
+    };
 
     container.appendChild(card);
   });
 }
+
 
 // SETAS
 document.getElementById("prevYear").onclick = () => {
