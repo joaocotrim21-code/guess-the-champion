@@ -83,7 +83,6 @@ function renderCards() {
   });
 }
 
-
 document.getElementById("submit").onclick = () => {
 	let total = 0;
 	let correctCount = 0;
