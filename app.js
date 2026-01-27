@@ -144,7 +144,8 @@ document.getElementById("submit").onclick = () => {
   let total = 0;
   let correct = 0;
 
-  document.querySelectorAll(".card").forEach(card => {
+  document.querySelectorAll(".card").forEach((card, index) => {
+    setTimeout(() => {
     const name = card.querySelector("h3")?.textContent;
     if (!name) return;
 
@@ -200,8 +201,9 @@ document.getElementById("submit").onclick = () => {
     `Score: ${correct}/${total} (${percent}%)\n\n` +
     `${location.origin}/?year=${currentYear}`
   );
-};
-
+    card.classList.add("reveal");
+  }, index * 120);
+});
 
 function showShare(text) {
   const box = document.getElementById("shareBox");
