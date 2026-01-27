@@ -2,6 +2,7 @@ let data;
 let currentYear;
 let allYears = [];
 let userChoices = {};
+let resultPattern = [];
 
 const urlParams = new URLSearchParams(window.location.search);
 const yearFromUrl = Number(urlParams.get("year"));
@@ -143,9 +144,11 @@ document.getElementById("randomYear").onclick = () => {
 document.getElementById("submit").onclick = () => {
   let total = 0;
   let correct = 0;
+  resultPattern = [];
 
-  document.querySelectorAll(".card").forEach((card, index) => {
-    setTimeout(() => {
+  const cards = document.querySelectorAll(".card");
+
+  cards.forEach(card => {
     const name = card.querySelector("h3")?.textContent;
     if (!name) return;
 
@@ -160,50 +163,73 @@ document.getElementById("submit").onclick = () => {
     const winner = season.winner;
     const pick = userChoices[code];
 
-    // Época em curso
+    // 🟩🟥🟨 WORDLE PATTERN
+    if (!winner) {
+      resultPattern.push("🟨");
+    } else if (pick === winner) {
+      resultPattern.push("🟩");
+    } else {
+      resultPattern.push("🟥");
+    }
+
     if (!winner) {
       card.classList.add("ongoing");
-      card.innerHTML = `
-        <h4>${comp.name}</h4>
-        <div>🏗️ Em curso</div>
-      `;
       return;
     }
 
     total++;
     if (pick === winner) correct++;
+  });
 
-    card.classList.add(pick === winner ? "correct" : "wrong");
+  // 🎴 REVEAL COM ANIMAÇÃO
+  cards.forEach((card, index) => {
+    setTimeout(() => {
+      const name = card.querySelector("h3")?.textContent;
+      if (!name) return;
 
-    // RESULTADO FINAL DO CARD
-    card.innerHTML = `
-      <div class="result-card">
-        <img class="club-logo" 
-             src="logos/${winner}.png"
-             onerror="this.style.display='none'" />
-        <h4>${winner}</h4>
+      const [_, comp] = Object.entries(data.competitions)
+        .find(([_, c]) => c.name === name) || [];
+      if (!comp) return;
 
-        ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
+      const season = comp.history.find(h => h.year === currentYear);
+      if (!season || !season.winner) return;
 
-        ${
-          pick && pick !== winner
-            ? `<div class="wrong-pick">❌ ${pick}</div>`
-            : ""
-        }
-      </div>
-    `;
+      const winner = season.winner;
+      const pick = userChoices[Object.keys(data.competitions)
+        .find(k => data.competitions[k].name === comp.name)];
+
+      card.classList.add("reveal", pick === winner ? "correct" : "wrong");
+
+      card.innerHTML = `
+        <div class="result-card">
+          <img class="club-logo"
+               src="logos/${winner}.png"
+               onerror="this.style.display='none'" />
+          <h4>${winner}</h4>
+          ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
+          ${
+            pick && pick !== winner
+              ? `<div class="wrong-pick">❌ ${pick}</div>`
+              : ""
+          }
+        </div>
+      `;
+    }, index * 120);
   });
 
   const percent = total ? Math.round((correct / total) * 100) : 0;
 
-  showShare(
+  const shareText =
     `GuessTheChampion ${currentYear}\n` +
-    `Score: ${correct}/${total} (${percent}%)\n\n` +
-    `${location.origin}/?year=${currentYear}`
-  );
-    card.classList.add("reveal");
-  }, index * 120);
-});
+    resultPattern.join("") + "\n" +
+    `${correct}/${total} (${percent}%)\n\n` +
+    `${location.origin}/?year=${currentYear}`;
+
+  showShare(shareText);
+
+  document.getElementById("submit").disabled = true;
+};
+
 
 function showShare(text) {
   const box = document.getElementById("shareBox");
