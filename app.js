@@ -34,10 +34,10 @@ fetch("data/competitions.json")
   });
 
 function updateYear() {
-  document.getElementById("currentYear").textContent = currentYear;
   const select = document.getElementById("yearSelect");
   if (select) select.value = currentYear;
 }
+
 
 function populateYearSelect() {
   const select = document.getElementById("yearSelect");
@@ -211,9 +211,15 @@ function showShare(text) {
   box.style.display = "block";
   btn.style.display = "inline-block";
 
-  btn.onclick = async () => {
+btn.onclick = async () => {
+  try {
     await navigator.clipboard.writeText(text);
-    btn.textContent = "Copiado! ✅";
-  };
+    btn.textContent = "Copiado ✅";
+    setTimeout(() => (btn.textContent = "Share"), 2000);
+  } catch {
+    alert("Copia manualmente 👍");
+  }
+};
+
 }
 
