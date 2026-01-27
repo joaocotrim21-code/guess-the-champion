@@ -233,7 +233,6 @@ stats.gamesPlayed++;
 stats.totalCorrect += correct;
 stats.totalGuesses += total;
 
-const percent = total ? Math.round((correct / total) * 100) : 0;
 if (percent > stats.bestPercent) stats.bestPercent = percent;
 
 // streak por ano
