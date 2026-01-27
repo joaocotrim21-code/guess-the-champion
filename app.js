@@ -210,7 +210,7 @@ function submitGame() {
                src="logos/${winner}.png"
                onerror="this.style.display='none'" />
           <h4>${winner}</h4>
-          <div class="titles">🏆 ${season.titles}º título</div>
+          <div class="titles">🏆 ${season.titles}</div>
           ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
         </div>
