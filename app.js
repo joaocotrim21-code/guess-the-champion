@@ -37,12 +37,15 @@ function fetchData() {
 }
 
 function buildAllYears() {
+  const CURRENT_YEAR = new Date().getFullYear();
   allYears = [
     ...new Set(
       Object.values(data.competitions)
         .flatMap(c =>
           c.history
-            .filter(h => h.winner !== undefined)
+            .filter(h =>
+              h.winner &&               // só concluídos
+              h.year <= CURRENT_YEAR    // não futuristas)
             .map(h => h.year)
         )
     )
