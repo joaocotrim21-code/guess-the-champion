@@ -1,3 +1,4 @@
+/* RESET / BASE */
 * {
   box-sizing: border-box;
   font-family: system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
@@ -9,7 +10,9 @@ body {
   color: #222;
 }
 
-/* TOP BAR */
+/* =========================
+   TOP BAR
+========================= */
 .top-bar {
   display: flex;
   align-items: center;
@@ -33,19 +36,37 @@ body {
   background: #eee;
 }
 
-/* CARDS GRID */
+/* =========================
+   CARDS GRID (RESPONSIVE)
+========================= */
 #cards {
   display: grid;
+  gap: 16px;
+  padding: 16px;
   grid-template-columns: repeat(5, 1fr);
-  grid-auto-rows: 1fr;
-  gap: 18px;
-  padding: 24px;
-  max-width: 1400px;
-  margin: 0 auto;
 }
 
+@media (max-width: 1100px) {
+  #cards {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
-/* CARD */
+@media (max-width: 700px) {
+  #cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 420px) {
+  #cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* =========================
+   CARD
+========================= */
 .card {
   background: white;
   border-radius: 16px;
@@ -75,12 +96,14 @@ body {
   }
 }
 
-/* CARD HEADER */
+/* =========================
+   CARD HEADER
+========================= */
 .card-header {
   display: flex;
   align-items: center;
   gap: 10px;
-  margin-bottom: 8px;
+  margin-bottom: 10px;
 }
 
 .card-header img.icon {
@@ -95,101 +118,9 @@ body {
   line-height: 1.2;
 }
 
-
-/* CLUB BUTTONS */
-.card button {
-  padding: 6px 8px;
-  border-radius: 8px;
-  border: 1px solid #ddd;
-  background: #fafafa;
-  cursor: pointer;
-  text-align: left;
-  font-size: 13px;
-}
-
-.card button:hover {
-  background: #eee;
-}
-
-.card button.selected {
-  background: #dce9ff;
-  border-color: #4c7cff;
-}
-
-/* RESULTS */
-.card.correct {
-  border: 2px solid #2ecc71;
-}
-
-.card.wrong {
-  border: 2px solid #e74c3c;
-}
-
-.card.ongoing {
-  border: 2px solid gold;
-}
-
-/* FOOTER */
-footer {
-  margin-top: 24px;
-  padding: 24px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 14px;
-}
-
-
-footer button {
-  padding: 10px 16px;
-  border-radius: 10px;
-  border: none;
-  background: #4c7cff;
-  color: white;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-footer button:hover {
-  background: #3a66e0;
-}
-
-textarea {
-  margin-top: 10px;
-  border-radius: 8px;
-  padding: 10px;
-}
-
-.result-card {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 6px;
-  text-align: center;
-}
-
-.club-logo {
-  width: 48px;
-  height: 48px;
-  object-fit: contain;
-}
-
-.streak {
-  margin-top: 6px;
-  font-weight: 600;
-  color: #ff6b00;
-}
-
-.wrong-pick {
-  margin-top: 6px;
-  font-size: 13px;
-  opacity: 0.8;
-}
-
-.hidden {
-  display: none;
-}
-
+/* =========================
+   PICK DISPLAY
+========================= */
 .pick-display {
   padding: 10px;
   border: 2px dashed #ddd;
@@ -214,12 +145,14 @@ textarea {
   font-size: 13px;
 }
 
-
 .card.picked {
   outline: 2px solid #4c7cff;
   outline-offset: 2px;
 }
 
+/* =========================
+   CLUB LIST
+========================= */
 .club-list {
   display: flex;
   flex-direction: column;
@@ -243,6 +176,86 @@ textarea {
 .club-list button:hover {
   background: #e8edff;
   border-color: #4c7cff;
+}
+
+.hidden {
+  display: none;
+}
+
+/* =========================
+   RESULT STATES
+========================= */
+.card.correct {
+  border: 2px solid #2ecc71;
+}
+
+.card.wrong {
+  border: 2px solid #e74c3c;
+}
+
+.card.ongoing {
+  border: 2px dashed gold;
+}
+
+/* =========================
+   RESULT CARD (AFTER SUBMIT)
+========================= */
+.result-card {
+  text-align: center;
+  padding: 8px 4px;
+  position: relative;
+}
+
+.club-logo {
+  width: 56px;
+  height: 56px;
+  object-fit: contain;
+  margin-bottom: 6px;
+}
+
+.result-card h4 {
+  margin: 4px 0;
+  font-size: 14px;
+}
+
+.streak {
+  margin-top: 6px;
+  font-weight: 600;
+  color: #ff6b00;
+}
+
+.wrong-pick {
+  margin-top: 6px;
+  font-size: 13px;
+  opacity: 0.75;
+}
+
+/* logo de fundo da competição (opcional) */
+.competition-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  opacity: 0.07;
+  pointer-events: none;
+}
+
+.result-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+/* =========================
+   FOOTER / ACTIONS
+========================= */
+footer {
+  margin-top: 24px;
+  padding: 24px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
 }
 
 #submit {
@@ -294,12 +307,3 @@ textarea {
   font-size: 13px;
   resize: none;
 }
-
-.titles {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  margin-top: 4px;
-}
-
-
-
