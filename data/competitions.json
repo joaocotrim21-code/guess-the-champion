@@ -3487,8 +3487,23 @@
     { "season": "1965/66", "year": 1966, "winner": "TSV 1860 München", "titles": 1 },
     { "season": "1964/65", "year": 1965, "winner": "Werder Bremen", "titles": 1 },
     { "season": "1963/64", "year": 1964, "winner": "FC Köln", "titles": 1 }
-  ]
-},
+      ],
+      "totals": {
+        "Bayern München": 33,
+        "Borussia Mönchengladbach": 5,
+        "Borussia Dortmund": 5,
+        "Werder Bremen": 4,
+        "Hamburger SV": 3,
+        "Stuttgart": 3,
+        "FC Köln": 2,
+        "Kaiserslautern": 2,
+        "TSV 1860 München": 1,
+        "Eintracht Braunschweig": 1,
+        "FC Nürnberg": 1
+      },
+      "icon": "https://crests.football-data.org/BL1.png",
+      "flag": "https://crests.football-data.org/759.svg"
+    },
     "FL1": {
       "name": "Ligue 1",
       "country": "France",
