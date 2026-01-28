@@ -198,8 +198,6 @@ function submitGame() {
   resultPattern = [];
 
   const cards = Array.from(document.querySelectorAll(".card"));
-
-  // Primeiro: calcular resultados e construir funções de renderização
   const renderJobs = [];
 
   cards.forEach((card) => {
@@ -217,7 +215,7 @@ function submitGame() {
     const winner = season.winner;
     const pick = userChoices[code];
 
-    // 🟩🟥🟨 pattern
+    // padrão tipo Wordle
     if (!winner) {
       resultPattern.push("🟨");
     } else if (pick === winner) {
@@ -226,37 +224,37 @@ function submitGame() {
       total++;
     } else {
       resultPattern.push("🟥");
-      if (pick) total++;
-      else total++; // mantém compatibilidade com lógica anterior (conta mesmo sem pick)
+      total++;
     }
 
-    const bg = document.createElement("img");
-    bg.src = competition.logo;
-    bg.className = "competition-bg";
-    card.appendChild(bg);
+    // background da competição (opcional, discreto)
+    if (comp.icon) {
+      const bg = document.createElement("img");
+      bg.src = comp.icon;
+      bg.className = "competition-bg";
+      card.appendChild(bg);
+    }
 
-    // preparar job de render (mantém valores atuais por closure)
     renderJobs.push({ card, comp, season, winner, pick });
   });
 
   const percent = total ? Math.round((correct / total) * 100) : 0;
 
+  // SHARE — limpo, sem chars estranhos
   const shareText =
-    `GuessTheChampion ${currentYear}\n` +
-    resultPattern.join("") + "\n" +
-    `${correct}/${total} (${percent}%)\n\n` +
-    `${location.origin}/?year=${currentYear}`;
+`GuessTheChampion ${currentYear}
+${resultPattern.join("")}
+${correct}/${total} (${percent}%)
 
-  // 📊 atualizar stats locais
+${location.origin}/?year=${currentYear}`;
+
+  // stats locais
   const stats = loadStats();
-
   stats.gamesPlayed++;
   stats.totalCorrect += correct;
   stats.totalGuesses += total;
-
   if (percent > stats.bestPercent) stats.bestPercent = percent;
 
-  // streak por ano
   if (stats.lastPlayedYear === currentYear - 1) {
     stats.streak++;
   } else {
@@ -264,39 +262,43 @@ function submitGame() {
   }
 
   stats.lastPlayedYear = currentYear;
-
   saveStats(stats);
 
   showShare(shareText);
 
-  // Agora animar/atualizar os cartões em sequência
+  // REVEAL SEQUENCIAL
   renderJobs.forEach((job, index) => {
-    setTimeout(() => {
-      const { card, comp, season, winner, pick } = job;
+    const { card, comp, season, winner, pick } = job;
 
+    card.classList.add("reveal");
+    card.style.animationDelay = `${index * 40}ms`;
+
+    setTimeout(() => {
       if (!winner) {
-        card.innerHTML = `<h4>${comp.name}</h4><div>🏗️ Em curso</div>`;
+        card.innerHTML = `
+          <div class="result-card">
+            <h4>${comp.name}</h4>
+            <div>🏗️ Em curso</div>
+          </div>
+        `;
         return;
       }
 
-      // classes: only add 'correct' if pick === winner, 'wrong' only if there was a pick and it's wrong
       if (pick === winner) card.classList.add("correct");
       else if (pick) card.classList.add("wrong");
 
       card.innerHTML = `
         <div class="result-card">
-          <img class="club-logo"
-               src="logos/${winner}.png"
-               onerror="this.style.display='none'" />
           <h4>${winner}</h4>
           <div class="titles">🏆 ${season.titles}</div>
           ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
         </div>
       `;
-    }, index * 360);
+    }, index * 200);
   });
 }
+
 
 /**********************
  * SHARE
