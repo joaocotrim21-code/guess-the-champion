@@ -262,8 +262,16 @@ ${location.origin}/?year=${currentYear}`;
   renderJobs.forEach((job, index) => {
     const { card, comp, season, winner, pick } = job;
 
+    // background da competição (opcional, discreto)
+    if (comp.icon) {
+      const bg = document.createElement("img");
+      bg.src = comp.icon;
+      bg.className = "competition-bg";
+      card.appendChild(bg);
+    }
+
     card.classList.add("reveal");
-    card.style.animationDelay = `${index * 40}ms`;
+    card.style.animationDelay = `${index * 400}ms`;
 
     setTimeout(() => {
       if (!winner) {
@@ -279,16 +287,6 @@ ${location.origin}/?year=${currentYear}`;
       if (pick === winner) card.classList.add("correct");
       else if (pick) card.classList.add("wrong");
 
-      
-
-    // background da competição (opcional, discreto)
-    if (comp.icon) {
-      const bg = document.createElement("img");
-      bg.src = comp.icon;
-      bg.className = "competition-bg";
-      card.appendChild(bg);
-    }
-
       card.innerHTML = `
         <div class="result-card">
           <h4>${winner}</h4>
@@ -297,7 +295,15 @@ ${location.origin}/?year=${currentYear}`;
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
         </div>
       `;
-    }, index * 2000);
+
+    // background da competição (opcional, discreto)
+    if (comp.icon) {
+      const bg = document.createElement("img");
+      bg.src = comp.icon;
+      bg.className = "competition-bg";
+      card.appendChild(bg);
+    }
+    }, index * 200);
   });
 }
 
@@ -317,7 +323,7 @@ function showShare(text) {
     try {
       await navigator.clipboard.writeText(text);
       btn.textContent = "Copiado ✅";
-      setTimeout(() => (btn.textContent = "Share"), 2000);
+      setTimeout(() => (btn.textContent = "Share"), 500);
     } catch {
       alert("Copia manualmente 👍");
     }
