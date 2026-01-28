@@ -227,14 +227,6 @@ function submitGame() {
       total++;
     }
 
-    // background da competição (opcional, discreto)
-    if (comp.icon) {
-      const bg = document.createElement("img");
-      bg.src = comp.icon;
-      bg.className = "competition-bg";
-      card.appendChild(bg);
-    }
-
     renderJobs.push({ card, comp, season, winner, pick });
   });
 
@@ -287,6 +279,16 @@ ${location.origin}/?year=${currentYear}`;
       if (pick === winner) card.classList.add("correct");
       else if (pick) card.classList.add("wrong");
 
+      
+
+    // background da competição (opcional, discreto)
+    if (comp.icon) {
+      const bg = document.createElement("img");
+      bg.src = comp.icon;
+      bg.className = "competition-bg";
+      card.appendChild(bg);
+    }
+
       card.innerHTML = `
         <div class="result-card">
           <h4>${winner}</h4>
@@ -295,7 +297,7 @@ ${location.origin}/?year=${currentYear}`;
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
         </div>
       `;
-    }, index * 200);
+    }, index * 2000);
   });
 }
 
