@@ -230,6 +230,11 @@ function submitGame() {
       else total++; // mantém compatibilidade com lógica anterior (conta mesmo sem pick)
     }
 
+    const bg = document.createElement("img");
+    bg.src = competition.logo;
+    bg.className = "competition-bg";
+    card.appendChild(bg);
+
     // preparar job de render (mantém valores atuais por closure)
     renderJobs.push({ card, comp, season, winner, pick });
   });
