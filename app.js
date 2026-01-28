@@ -33,6 +33,10 @@ function fetchData() {
       setInitialYear();
       populateYearSelect();
       renderCards();
+    })
+    .catch(err => {
+      console.error("Erro a carregar dados:", err);
+      // opcional: mostrar mensagem ao utilizador
     });
 }
 
@@ -45,7 +49,8 @@ function buildAllYears() {
           c.history
             .filter(h =>
               h.winner &&               // só concluídos
-              h.year <= CURRENT_YEAR    // não futuristas)
+              h.year <= CURRENT_YEAR    // não futuristas
+            )
             .map(h => h.year)
         )
     )
@@ -133,7 +138,7 @@ function createCard(comp, code, season) {
     </div>
 
     <div class="pick-display">
-      <span class="placeholder">Escolhe o campeão</span>
+      <span class="placeholder">Pick</span>
     </div>
 
     <div class="club-list hidden"></div>
@@ -163,6 +168,24 @@ function createCard(comp, code, season) {
 }
 
 /**********************
+ * STORAGE HELPERS
+ **********************/
+function loadStats() {
+  return JSON.parse(localStorage.getItem("gtc_stats")) || {
+    gamesPlayed: 0,
+    totalCorrect: 0,
+    totalGuesses: 0,
+    bestPercent: 0,
+    streak: 0,
+    lastPlayedYear: null
+  };
+}
+
+function saveStats(stats) {
+  localStorage.setItem("gtc_stats", JSON.stringify(stats));
+}
+
+/**********************
  * SUBMIT & RESULTS
  **********************/
 function setupSubmit() {
@@ -174,38 +197,86 @@ function submitGame() {
   let correct = 0;
   resultPattern = [];
 
-  const cards = document.querySelectorAll(".card");
+  const cards = Array.from(document.querySelectorAll(".card"));
 
-  cards.forEach((card, index) => {
+  // Primeiro: calcular resultados e construir funções de renderização
+  const renderJobs = [];
+
+  cards.forEach((card) => {
+    const name = card.querySelector("h3")?.textContent;
+    if (!name) return;
+
+    const entry = Object.entries(data.competitions)
+      .find(([_, c]) => c.name === name);
+    if (!entry) return;
+
+    const [code, comp] = entry;
+    const season = comp.history.find(h => h.year === currentYear);
+    if (!season) return;
+
+    const winner = season.winner;
+    const pick = userChoices[code];
+
+    // 🟩🟥🟨 pattern
+    if (!winner) {
+      resultPattern.push("🟨");
+    } else if (pick === winner) {
+      resultPattern.push("🟩");
+      correct++;
+      total++;
+    } else {
+      resultPattern.push("🟥");
+      if (pick) total++;
+      else total++; // mantém compatibilidade com lógica anterior (conta mesmo sem pick)
+    }
+
+    // preparar job de render (mantém valores atuais por closure)
+    renderJobs.push({ card, comp, season, winner, pick });
+  });
+
+  const percent = total ? Math.round((correct / total) * 100) : 0;
+
+  const shareText =
+    `GuessTheChampion ${currentYear}\n` +
+    resultPattern.join("") + "\n" +
+    `${correct}/${total} (${percent}%)\n\n` +
+    `${location.origin}/?year=${currentYear}`;
+
+  // 📊 atualizar stats locais
+  const stats = loadStats();
+
+  stats.gamesPlayed++;
+  stats.totalCorrect += correct;
+  stats.totalGuesses += total;
+
+  if (percent > stats.bestPercent) stats.bestPercent = percent;
+
+  // streak por ano
+  if (stats.lastPlayedYear === currentYear - 1) {
+    stats.streak++;
+  } else {
+    stats.streak = 1;
+  }
+
+  stats.lastPlayedYear = currentYear;
+
+  saveStats(stats);
+
+  showShare(shareText);
+
+  // Agora animar/atualizar os cartões em sequência
+  renderJobs.forEach((job, index) => {
     setTimeout(() => {
-      const name = card.querySelector("h3")?.textContent;
-      if (!name) return;
-
-      const entry = Object.entries(data.competitions)
-        .find(([_, c]) => c.name === name);
-      if (!entry) return;
-
-      const [code, comp] = entry;
-      const season = comp.history.find(h => h.year === currentYear);
-      if (!season) return;
-
-      const winner = season.winner;
-      const pick = userChoices[code];
-
-      // 🟩🟥🟨 pattern
-      if (!winner) resultPattern.push("🟨");
-      else if (pick === winner) resultPattern.push("🟩");
-      else resultPattern.push("🟥");
+      const { card, comp, season, winner, pick } = job;
 
       if (!winner) {
         card.innerHTML = `<h4>${comp.name}</h4><div>🏗️ Em curso</div>`;
         return;
       }
 
-      total++;
-      if (pick === winner) correct++;
-
-      card.classList.add(pick === winner ? "correct" : "wrong");
+      // classes: only add 'correct' if pick === winner, 'wrong' only if there was a pick and it's wrong
+      if (pick === winner) card.classList.add("correct");
+      else if (pick) card.classList.add("wrong");
 
       card.innerHTML = `
         <div class="result-card">
@@ -218,38 +289,8 @@ function submitGame() {
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
         </div>
       `;
-    }, index * 120);
+    }, index * 360);
   });
-
-  const percent = total ? Math.round((correct / total) * 100) : 0;
-
-  const shareText =
-    `GuessTheChampion ${currentYear}\n` +
-    resultPattern.join("") + "\n" +
-    `${correct}/${total} (${percent}%)\n\n` +
-    `${location.origin}/?year=${currentYear}`;
-
-  // 📊 atualizar stats locais
-const stats = loadStats();
-
-stats.gamesPlayed++;
-stats.totalCorrect += correct;
-stats.totalGuesses += total;
-
-if (percent > stats.bestPercent) stats.bestPercent = percent;
-
-// streak por ano
-if (stats.lastPlayedYear === currentYear - 1) {
-  stats.streak++;
-} else {
-  stats.streak = 1;
-}
-
-stats.lastPlayedYear = currentYear;
-
-saveStats(stats);
-
-  showShare(shareText);
 }
 
 /**********************
@@ -272,21 +313,4 @@ function showShare(text) {
       alert("Copia manualmente 👍");
     }
   };
-
-  //helpers de storage
-  function loadStats() {
-  return JSON.parse(localStorage.getItem("gtc_stats")) || {
-    gamesPlayed: 0,
-    totalCorrect: 0,
-    totalGuesses: 0,
-    bestPercent: 0,
-    streak: 0,
-    lastPlayedYear: null
-  };
-}
-
-function saveStats(stats) {
-  localStorage.setItem("gtc_stats", JSON.stringify(stats));
-}
-
 }
