@@ -217,13 +217,13 @@ function submitGame() {
 
     // padrão tipo Wordle
     if (!winner) {
-      resultPattern.push("🟨");
+      resultPattern.push("❌");
     } else if (pick === winner) {
-      resultPattern.push("🟩");
+      resultPattern.push("✅");
       correct++;
       total++;
     } else {
-      resultPattern.push("🟥");
+      resultPattern.push("?");
       total++;
     }
 
