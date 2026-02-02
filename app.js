@@ -216,17 +216,17 @@ function submitGame() {
     const pick = userChoices[code];
 
 // 🟩🟥🟨 padrão Wordle (FINAL)
-    if (!winner) {
-      // época em curso
-      resultPattern.push("🟨");
-    } else if (pick === winner) {
-      resultPattern.push("🟩");
-      correct++;
-      total++;
-    } else {
-      resultPattern.push("🟥");
-      total++;
-    }
+if (!winner) {
+  resultPattern.push("\u{1F7E8}"); // 🟨
+} else if (pick === winner) {
+  resultPattern.push("\u{1F7E9}"); // 🟩
+  correct++;
+  total++;
+} else {
+  resultPattern.push("\u{1F7E5}"); // 🟥
+  total++;
+}
+
 
     renderJobs.push({ card, comp, season, winner, pick });
   });
