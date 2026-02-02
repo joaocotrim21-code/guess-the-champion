@@ -272,7 +272,7 @@ ${location.origin}/?year=${currentYear}`;
     }
 
     card.classList.add("reveal");
-    card.style.animationDelay = `${index * 400}ms`;
+    card.style.animationDelay = `${index * 500}ms`;
 
     setTimeout(() => {
       if (!winner) {
@@ -304,7 +304,7 @@ ${location.origin}/?year=${currentYear}`;
       bg.className = "competition-bg";
       card.appendChild(bg);
     }
-    }, index * 400);
+    }, index * 600);
   });
 }
 
