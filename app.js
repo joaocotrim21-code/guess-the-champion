@@ -223,7 +223,7 @@ function submitGame() {
       correct++;
       total++;
     } else {
-      resultPattern.push("?");
+      resultPattern.push("❌");
       total++;
     }
 
