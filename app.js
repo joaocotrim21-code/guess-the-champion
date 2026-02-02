@@ -215,15 +215,16 @@ function submitGame() {
     const winner = season.winner;
     const pick = userChoices[code];
 
-    // padrão tipo Wordle
+// 🟩🟥🟨 padrão Wordle (FINAL)
     if (!winner) {
-      resultPattern.push("❌");
+      // época em curso
+      resultPattern.push("🟨");
     } else if (pick === winner) {
-      resultPattern.push("✅");
+      resultPattern.push("🟩");
       correct++;
       total++;
     } else {
-      resultPattern.push("❌");
+      resultPattern.push("🟥");
       total++;
     }
 
