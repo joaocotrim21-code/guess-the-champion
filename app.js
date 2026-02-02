@@ -217,13 +217,13 @@ function submitGame() {
 
 // 🟩🟥🟨 padrão Wordle (FINAL)
 if (!winner) {
-  resultPattern.push("\u{1F7E8}"); // 🟨
+  resultPattern.push("🏆"); // 🟨
 } else if (pick === winner) {
-  resultPattern.push("\u{1F7E9}"); // 🟩
+  resultPattern.push("✅"); // 🟩
   correct++;
   total++;
 } else {
-  resultPattern.push("\u{1F7E5}"); // 🟥
+  resultPattern.push("❌"); // 🟥
   total++;
 }
 
@@ -279,7 +279,7 @@ ${location.origin}/?year=${currentYear}`;
         card.innerHTML = `
           <div class="result-card">
             <h4>${comp.name}</h4>
-            <div>🏗️ Em curso</div>
+            <div>🏗️ on going</div>
           </div>
         `;
         return;
@@ -304,7 +304,7 @@ ${location.origin}/?year=${currentYear}`;
       bg.className = "competition-bg";
       card.appendChild(bg);
     }
-    }, index * 200);
+    }, index * 400);
   });
 }
 
