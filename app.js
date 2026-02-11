@@ -135,6 +135,7 @@ function createCard(comp, code, season) {
     <div class="card-header">
       <img class="icon" src="${comp.icon}" />
       <h3>${comp.name}</h3>
+      <div class="season-label">${season.season}</div>
     </div>
 
     <div class="pick-display">
