@@ -23,6 +23,29 @@ body {
   box-shadow: 0 2px 8px rgba(0,0,0,0.06);
 }
 
+.site-title {
+  text-align: center;
+  margin-right: 20px;
+}
+
+.site-title h1 {
+  font-size: 18px;
+  margin: 0;
+}
+
+.site-title p {
+  font-size: 12px;
+  margin: 0;
+  opacity: 0.6;
+}
+
+.year-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+
 .top-bar button,
 .top-bar select {
   padding: 6px 10px;
@@ -118,6 +141,11 @@ body {
   line-height: 1.2;
 }
 
+.season-label {
+  font-size: 12px;
+  opacity: 0.6;
+  margin-top: 2px;
+}
 
 /* =========================
    PICK DISPLAY
