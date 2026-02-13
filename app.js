@@ -271,12 +271,15 @@ const shareText =
   imageBtn.style.display = "inline-block";
 
 imageBtn.onclick = async () => {
-  const dataUrl = generateShareImage({
-    year: currentYear,
-    pattern: resultPattern,
-    correct,
-    total
-  });
+const flags = Object.values(data.competitions).map(c => c.flag);
+
+const dataUrl = await generateShareImage({
+  year: currentYear,
+  pattern: resultPattern,
+  correct,
+  total,
+  flags
+});
 
   // Mobile share (best case)
   if (navigator.share) {
@@ -328,7 +331,13 @@ imageBtn.onclick = async () => {
 
       card.innerHTML = `
         <div class="result-card">
+          <div class="result-meta">
+            <img class="flag" src="${comp.flag}" alt="${comp.country}" />
+            <span class="season">${season.season}</span>
+          </div>
+      
           <h4>${winner}</h4>
+      
           <div class="titles">🏆 ${season.titles}</div>
           ${season.streak ? `<div class="streak">🔥 ${season.streak}</div>` : ""}
           ${pick && pick !== winner ? `<div class="wrong-pick">❌ ${pick}</div>` : ""}
@@ -369,7 +378,17 @@ function showShare(text) {
   };
 }
 
-function generateShareImage({ year, pattern, correct, total }) {
+function loadImage(src) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = src;
+  });
+}
+
+async function generateShareImage({ year, pattern, correct, total, flags }) {
   const canvas = document.getElementById("shareCanvas");
   const ctx = canvas.getContext("2d");
 
@@ -395,6 +414,23 @@ function generateShareImage({ year, pattern, correct, total }) {
   ctx.font = "18px system-ui";
   ctx.fillStyle = "#555";
   ctx.fillText(`Season ${year - 1}/${year}`, 300, 150);
+
+  // FLAGS ROW (SVG images)
+const flagSize = 36;
+const gap = 12;
+const totalWidth = flags.length * flagSize + (flags.length - 1) * gap;
+let startX = (canvas.width - totalWidth) / 2;
+const y = 190;
+
+for (const flagUrl of flags) {
+  try {
+    const img = await loadImage(flagUrl);
+    ctx.drawImage(img, startX, y, flagSize, flagSize);
+  } catch {
+    // ignore failed flag
+  }
+  startX += flagSize + gap;
+}
 
   // pattern
   ctx.font = "32px system-ui";
