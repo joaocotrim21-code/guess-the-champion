@@ -218,9 +218,9 @@ function submitGame() {
 
 // 🟩🟥🟨 padrão Wordle (FINAL)
 if (!winner) {
-  resultPattern.push("🏆"); // 🟨
+  resultPattern.push("🏗️"); // 🟨
 } else if (pick === winner) {
-  resultPattern.push("✅"); // 🟩
+  resultPattern.push("🏆"); // 🟩
   correct++;
   total++;
 } else {
@@ -234,13 +234,14 @@ if (!winner) {
 
   const percent = total ? Math.round((correct / total) * 100) : 0;
 
-  // SHARE — limpo, sem chars estranhos
-  const shareText =
-`GuessTheChampion ${currentYear}
-${resultPattern.join("")}
-${correct}/${total} (${percent}%)
+  const seasonLabel = `${currentYear - 1}/${currentYear}`;
 
-${location.origin}/?year=${currentYear}`;
+const shareText =
+  `⚽ Guess The Champion – Season ${seasonLabel}\n\n` +
+  resultPattern.join("") + "\n" +
+  `${correct} / ${total}\n\n` +
+  `Can you beat this score?\n` +
+  `${location.origin}/?year=${currentYear}`;
 
   // stats locais
   const stats = loadStats();
@@ -259,6 +260,36 @@ ${location.origin}/?year=${currentYear}`;
   saveStats(stats);
 
   showShare(shareText);
+
+  const imageBtn = document.getElementById("shareImage");
+imageBtn.style.display = "inline-block";
+
+imageBtn.onclick = async () => {
+  const dataUrl = generateShareImage({
+    year: currentYear,
+    pattern: resultPattern,
+    correct,
+    total
+  });
+
+  // Mobile share (best case)
+  if (navigator.share) {
+    const blob = await (await fetch(dataUrl)).blob();
+    const file = new File([blob], "guess-the-champion.png", { type: "image/png" });
+
+    try {
+      await navigator.share({
+        files: [file],
+        title: "Guess The Champion"
+      });
+      return;
+    } catch {}
+  }
+
+  // Fallback: open image
+  const win = window.open();
+  win.document.write(`<img src="${dataUrl}" style="width:100%">`);
+};
 
   // REVEAL SEQUENCIAL
   renderJobs.forEach((job, index) => {
@@ -324,10 +355,55 @@ function showShare(text) {
   btn.onclick = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      btn.textContent = "Copiado ✅";
+      btn.textContent = " ✅";
       setTimeout(() => (btn.textContent = "Share"), 500);
     } catch {
-      alert("Copia manualmente 👍");
+      alert("Copy manually 👍");
     }
   };
+}
+
+function generateShareImage({ year, pattern, correct, total }) {
+  const canvas = document.getElementById("shareCanvas");
+  const ctx = canvas.getContext("2d");
+
+  // background
+  ctx.fillStyle = "#f5f7fa";
+  ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+  // card
+  ctx.fillStyle = "#ffffff";
+  ctx.strokeStyle = "#e0e0e0";
+  ctx.lineWidth = 2;
+  ctx.roundRect(40, 40, 520, 520, 24);
+  ctx.fill();
+  ctx.stroke();
+
+  // title
+  ctx.fillStyle = "#222";
+  ctx.font = "bold 28px system-ui";
+  ctx.textAlign = "center";
+  ctx.fillText("Guess The Champion", 300, 110);
+
+  // season
+  ctx.font = "18px system-ui";
+  ctx.fillStyle = "#555";
+  ctx.fillText(`Season ${year - 1}/${year}`, 300, 150);
+
+  // pattern
+  ctx.font = "32px system-ui";
+  ctx.fillStyle = "#000";
+  ctx.fillText(pattern.join(""), 300, 250);
+
+  // score
+  ctx.font = "20px system-ui";
+  ctx.fillStyle = "#333";
+  ctx.fillText(`${correct} / ${total}`, 300, 300);
+
+  // footer
+  ctx.font = "16px system-ui";
+  ctx.fillStyle = "#777";
+  ctx.fillText("guess-the-champion.pages.dev", 300, 460);
+
+  return canvas.toDataURL("image/png");
 }
