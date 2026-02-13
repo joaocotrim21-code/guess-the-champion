@@ -336,3 +336,14 @@ footer {
   font-size: 13px;
   resize: none;
 }
+
+#shareArea {
+  margin: 16px;
+  padding: 16px;
+  background: white;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
