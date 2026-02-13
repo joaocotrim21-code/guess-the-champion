@@ -25,14 +25,27 @@
 <main id="cards"></main>
 
 <footer>
-  <button id="submit">Send</button>
-  <div id="result"></div>
-  <button id="share" style="display:none;">Share</button>
-<textarea id="shareBox" readonly style="display:none; width:100%; height:120px;"></textarea>
+  <div class="footer-actions">
+    <button id="submit">Send</button>
+    <button id="share" style="display:none;">Share</button>
+    <button id="shareImage" style="display:none;">Share Image</button>
+  </div>
 
+  <textarea
+    id="shareBox"
+    readonly
+    style="display:none; width:100%; height:120px;"
+  ></textarea>
 </footer>
 
 <script src="app.js" defer></script>
+
+<canvas
+  id="shareCanvas"
+  width="600"
+  height="600"
+  style="display:none;"
+></canvas>
 </body>
 </html>
  
