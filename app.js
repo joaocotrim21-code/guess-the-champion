@@ -242,6 +242,8 @@ const shareText =
   `${correct} / ${total}\n\n` +
   `Can you beat this score?\n` +
   `${location.origin}/?year=${currentYear}`;
+  
+  showShare(shareText);
 
   // stats locais
   const stats = loadStats();
@@ -259,10 +261,8 @@ const shareText =
   stats.lastPlayedYear = currentYear;
   saveStats(stats);
 
-  showShare(shareText);
-
   const imageBtn = document.getElementById("shareImage");
-imageBtn.style.display = "inline-block";
+  imageBtn.style.display = "inline-block";
 
 imageBtn.onclick = async () => {
   const dataUrl = generateShareImage({
