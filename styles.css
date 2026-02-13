@@ -235,6 +235,26 @@ body {
   position: relative;
 }
 
+.result-meta {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+  opacity: 0.75;
+}
+
+.result-meta img.flag {
+  width: 22px;
+  height: 14px;
+  object-fit: contain;
+}
+
+.result-meta .season {
+  font-size: 0.8rem;
+  font-weight: 500;
+}
+
 .club-logo {
   width: 56px;
   height: 56px;
