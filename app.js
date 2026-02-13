@@ -114,6 +114,9 @@ function randomYear() {
  * CARDS
  **********************/
 function renderCards() {
+  const submitBtn = document.getElementById("submit");
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Send";
   const container = document.getElementById("cards");
   container.innerHTML = "";
   userChoices = {};
@@ -194,6 +197,9 @@ function setupSubmit() {
 }
 
 function submitGame() {
+  const submitBtn = document.getElementById("submit"); 
+  submitBtn.disabled = true;
+  submitBtn.textContent = "Done";
   let total = 0;
   let correct = 0;
   resultPattern = [];
@@ -345,18 +351,18 @@ imageBtn.onclick = async () => {
  * SHARE
  **********************/
 function showShare(text) {
+  const area = document.getElementById("shareArea");
   const box = document.getElementById("shareBox");
   const btn = document.getElementById("share");
 
+  area.style.display = "flex";
   box.value = text;
-  box.style.display = "block";
-  btn.style.display = "inline-block";
 
   btn.onclick = async () => {
     try {
       await navigator.clipboard.writeText(text);
-      btn.textContent = " ✅";
-      setTimeout(() => (btn.textContent = "Share"), 500);
+      btn.textContent = "Copied ✅";
+      setTimeout(() => (btn.textContent = "Share"), 2000);
     } catch {
       alert("Copy manually 👍");
     }
