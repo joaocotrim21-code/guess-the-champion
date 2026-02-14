@@ -127,6 +127,7 @@ function resetPostGameUI() {
  **********************/
 function renderCards() {
   resetPostGameUI();
+  window.scrollTo({ top: 0, behavior: "smooth" });
 
   const container = document.getElementById("cards");
   container.innerHTML = "";
