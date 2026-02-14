@@ -110,13 +110,24 @@ function randomYear() {
   document.getElementById("yearSelect").value = currentYear;
 }
 
+function resetPostGameUI() {
+  const area = document.getElementById("shareArea");
+  const imageBtn = document.getElementById("shareImage");
+  const submitBtn = document.getElementById("submit");
+
+  if (area) area.style.display = "none";
+  if (imageBtn) imageBtn.style.display = "none";
+
+  submitBtn.disabled = false;
+  submitBtn.textContent = "Send";
+}
+
 /**********************
  * CARDS
  **********************/
 function renderCards() {
-  const submitBtn = document.getElementById("submit");
-  submitBtn.disabled = false;
-  submitBtn.textContent = "Send";
+  resetPostGameUI();
+
   const container = document.getElementById("cards");
   container.innerHTML = "";
   userChoices = {};
