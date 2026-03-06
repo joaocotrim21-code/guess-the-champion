@@ -112,11 +112,9 @@ function randomYear() {
 
 function resetPostGameUI() {
   const area = document.getElementById("shareArea");
-  const imageBtn = document.getElementById("shareImage");
   const submitBtn = document.getElementById("submit");
 
   if (area) area.style.display = "none";
-  if (imageBtn) imageBtn.style.display = "none";
 
   submitBtn.disabled = false;
   submitBtn.textContent = "Send";
@@ -157,7 +155,7 @@ function createCard(comp, code, season) {
       <span class="placeholder">Pick</span>
     </div>
 
-    <div class="club-list hidden"></div>
+    <div class="club-list"></div>
   `;
 
   const display = card.querySelector(".pick-display");
@@ -257,7 +255,7 @@ if (!winner) {
 const shareText =
   `⚽ Guess The Champion – Season ${seasonLabel}\n\n` +
   resultPattern.join("") + "\n" +
-  `${correct} / ${total}\n\n` +
+  `Score: ${correct}/${total}\n\n` +
   `Can you beat this score?\n` +
   `${location.origin}/?year=${currentYear}`;
   
@@ -279,38 +277,6 @@ const shareText =
   stats.lastPlayedYear = currentYear;
   saveStats(stats);
 
-  const imageBtn = document.getElementById("shareImage");
-  imageBtn.style.display = "inline-block";
-
-imageBtn.onclick = async () => {
-const flags = Object.values(data.competitions).map(c => c.flag);
-
-const dataUrl = await generateShareImage({
-  year: currentYear,
-  pattern: resultPattern,
-  correct,
-  total,
-  flags
-});
-
-  // Mobile share (best case)
-  if (navigator.share) {
-    const blob = await (await fetch(dataUrl)).blob();
-    const file = new File([blob], "guess-the-champion.png", { type: "image/png" });
-
-    try {
-      await navigator.share({
-        files: [file],
-        title: "Guess The Champion"
-      });
-      return;
-    } catch {}
-  }
-
-  // Fallback: open image
-  const win = window.open();
-  win.document.write(`<img src="${dataUrl}" style="width:100%">`);
-};
 
   // REVEAL SEQUENCIAL
   renderJobs.forEach((job, index) => {
@@ -390,74 +356,5 @@ function showShare(text) {
   };
 }
 
-function loadImage(src) {
-  return new Promise((resolve, reject) => {
-    const img = new Image();
-    img.crossOrigin = "anonymous";
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = src;
-  });
-}
 
-async function generateShareImage({ year, pattern, correct, total, flags }) {
-  const canvas = document.getElementById("shareCanvas");
-  const ctx = canvas.getContext("2d");
 
-  // background
-  ctx.fillStyle = "#f5f7fa";
-  ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-  // card
-  ctx.fillStyle = "#ffffff";
-  ctx.strokeStyle = "#e0e0e0";
-  ctx.lineWidth = 2;
-  ctx.roundRect(40, 40, 520, 520, 24);
-  ctx.fill();
-  ctx.stroke();
-
-  // title
-  ctx.fillStyle = "#222";
-  ctx.font = "bold 28px system-ui";
-  ctx.textAlign = "center";
-  ctx.fillText("Guess The Champion", 300, 110);
-
-  // season
-  ctx.font = "18px system-ui";
-  ctx.fillStyle = "#555";
-  ctx.fillText(`Season ${year - 1}/${year}`, 300, 150);
-
-  // FLAGS ROW (SVG images)
-const flagSize = 36;
-const gap = 12;
-const totalWidth = flags.length * flagSize + (flags.length - 1) * gap;
-let startX = (canvas.width - totalWidth) / 2;
-const y = 190;
-
-for (const flagUrl of flags) {
-  try {
-    const img = await loadImage(flagUrl);
-    ctx.drawImage(img, startX, y, flagSize, flagSize);
-  } catch {
-    // ignore failed flag
-  }
-  startX += flagSize + gap;
-}
-
-  // pattern
-  ctx.font = "32px system-ui";
-  ctx.fillStyle = "#000";
-  ctx.fillText(pattern.join(""), 300, 250);
-
-  // score
-  ctx.font = "20px system-ui";
-  ctx.fillStyle = "#333";
-  ctx.fillText(`${correct} / ${total}`, 300, 300);
-
-  // footer
-  ctx.font = "16px system-ui";
-  ctx.fillStyle = "#777";
-  ctx.fillText("guess-the-champion.pages.dev", 300, 460);
-
-  return canvas.toDataURL("image/png");
-}
